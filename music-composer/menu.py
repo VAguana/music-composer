@@ -3,7 +3,9 @@ from tkinter import*
 from tkinter.filedialog import askopenfilename
 from music21 import *
 
-archivo = str()
+#*---------Variables----------*#
+i = 0
+composicion = [stream.Part(),stream.Part(),stream.Part(),stream.Part()]
 
 #*-----------Ventana----------*#
 window = Tk()
@@ -37,15 +39,21 @@ for frame in (frame1, newframe, frameArp, frameTrans, frameP, frameBorrar):
 
 
 #*---------------------- Funciones----------------------*#
+def tinystr(direccion:str) -> str:
+    i = 0
+    p = False
+    while i<=(len(direccion)-13) and p==False:
+        p = (direccion[i:i+13:1] == ".tinynotation")
+        i = i+1
+    if p == True:
+        return direccion[0:i+12:1]
+    else:
+        print("Esa dirección no es válida")
+
 def OpenFile():
     name = askopenfilename(initialdir="C:/", filetypes =(("Tinynotation File", "*.tinynotation"),("All Files","*.*")), title = "Choose a file.")
-    print(name)
+    return name
 
-    try:
-        with open(name,'r') as UseFile:
-            print(UseFile.read())
-    except:
-        print("No se escogió ningún archivo")
 
 def cargar(ruta:str,parte:stream.Part) -> "void":
     """
@@ -63,7 +71,7 @@ def cargar(ruta:str,parte:stream.Part) -> "void":
         posible = False
 
     try:
-        assert(posible)
+        #assert(posible)
         s = converter.parse(ruta)
         parte.append(s)
     except:
@@ -90,6 +98,20 @@ def playAll():
 def show_frame(page_name):
     page_name.tkraise()
 
+def cambiar_parte(j:int):
+    global i
+    i = j
+
+def reproducir(parte:stream.Part)->"void":
+    """
+    Esta función reproduce una parte.
+    """
+    #Precondición de la definición:
+    assert(True)
+    parte.show("midi")
+    #Postcondición de la definición:
+    assert(True)
+
 #*----------------------Widgets----------------------*#
 #*--------- Frame 1---------*#
 image = PhotoImage(file="titulo.png")
@@ -97,7 +119,7 @@ label = Label(frame1, image=image)
 label.place(width="500", height="300")
 
 imgP1 = PhotoImage(file="button1.png")
-botonParte1 = Button(frame1, cursor="hand2", image=imgP1, border=0, bg="#999999", command = lambda: show_frame(newframe))
+botonParte1 = Button(frame1, cursor="hand2", image=imgP1, border=0, bg="#999999", command = lambda: [show_frame(newframe),cambiar_parte(0)])
 botonParte1.grid(row=0, column=0)
 
 imgP2 = PhotoImage(file="button2.png")
@@ -123,7 +145,7 @@ botonSalir.grid(row=5, column=0)
 
 #*--------- New Frame ---------*#
 imgCargar = PhotoImage(file="button_cargar.png")
-botonCargar = Button(newframe, cursor="hand2", image=imgCargar, border=0, bg="#999999", command= lambda: OpenFile())
+botonCargar = Button(newframe, cursor="hand2", image=imgCargar, border=0, bg="#999999", command= lambda: cargar(OpenFile(),composicion[i]))
 botonCargar.grid(row=3, column=0, sticky=W+E+N+S)
 
 imgArpegio = PhotoImage(file="button_arpegio.png")
@@ -138,11 +160,11 @@ botonTransportar.grid(row=6, column=0, sticky=W+E+N+S)
 
 imgPlay = PhotoImage(file="button_escuchar.png")
 botonPlay = Button(newframe, cursor="hand2", image=imgPlay,
-border=0, bg="#999999", command = lambda: show_frame(frameP))
+border=0, bg="#999999", command = lambda: [show_frame(frameP), reproducir(composicion[i])])
 botonPlay.grid(row=6, column=1, sticky=W+E+N+S)
 
 imgBorrar = PhotoImage(file="button_borrar.png")
-botonBorrar = Button(newframe, cursor="hand2", image=imgBorrar, 
+botonBorrar = Button(newframe, cursor="hand2", image=imgBorrar,
 border=0, bg="#999999", command = lambda: show_frame(frameBorrar))
 botonBorrar.grid(row=8, column=0)
 
@@ -190,7 +212,6 @@ backBorrar = PhotoImage(file="button_regresar.png")
 botonBackBorrar = Button(frameBorrar, image=backBorrar, border=0, bg="#999999",
 command = lambda: show_frame(newframe))
 botonBackBorrar.pack()
-
 
 show_frame(frame1)
 
