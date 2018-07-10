@@ -5,9 +5,10 @@ from music21 import *
 """
 Una melodía es una lista de notas.
 Una parte es un objeto del tipo "stream.Part"
-Una canción es un objeto del tipo "stream.Score" 
+Una canción es un objeto del tipo "stream.Score"
 """
-
+nota = "null"
+intervalo = "null"
 intervalos_validos = ["P1","m2","M2","m3","M3"
                       "P4","P5","m6","M6","m7"
                       "M7","P8"]
@@ -39,10 +40,10 @@ def convertir_parte(Melodia:list) -> stream.Part:
     #Precondición de la definición:
     assert(True)
     parte = stream.Part()
-    
+
     for i in Melodia:
         parte.append(i)
-    
+
     #Postcondición de la definición:
     #Parte será la Melodía convertida a Parte
 
@@ -72,13 +73,13 @@ def trasponer(parte:stream.Part,intervalo:str) -> stream.Part:
 #FUNCIONAL
 def cargar(ruta:str,parte:stream.Part) -> "void":
     """
-    Este procedimiento carga un archivo en formato tinynotation y lo convierte en una 
+    Este procedimiento carga un archivo en formato tinynotation y lo convierte en una
     parte.
     """
     #Precondición de la definición:
     #La ruta especificada lleva a un archivo
     posible = True #Posible indica si es posible o no efectuar la carga.
-    
+
     try:
         assert(ruta[len(ruta)-13::1]==".tinynotation")
     except:
@@ -92,28 +93,33 @@ def cargar(ruta:str,parte:stream.Part) -> "void":
     except:
         print("La ruta especificada no es válida.")
 
-    
 
-def reiniciar_parte(parte:stream.Part) -> "void":
+
+def reiniciar_parte() -> "void":
     """
     Este procedimiento reinicia una parte, la deja vacía.
     """
     #Precondición de la definición:
-    assert(True)
-    parte = False
     parte = stream.Part()
     #Postcondición de la definición:
     #parte ahora está vacía.
 
+def reiniciar_cancion():
+    """
+    Este procedimiento reinicia una cancion
+    """
+    global cancion
+    cancion = stream.Score()
+
 #FUNCIONAL
 def crear_arpegio(nota:note.Note,intervalo:str) -> stream.Part:
     """
-    Este procedimiento crea un arpegio de 8 notas partiendo de una nota y 
+    Este procedimiento crea un arpegio de 8 notas partiendo de una nota y
     serparado por un intervalo "intervalo".
     """
     #Precondición de la definición:
     try:
-        assert(existe(i==intervalo for i in intervalos_validos))
+        assert(existe(i==intervalo for i in intervalos_validos) and (nota != "null") and (intervalo!="null"))
         parte = stream.Part()
         for i in range(8):
             parte.append(nota)
@@ -123,7 +129,7 @@ def crear_arpegio(nota:note.Note,intervalo:str) -> stream.Part:
 
     #Postcondición de la definición:
     #parte es un arpegio de 8 notas separadas por "intervalo"
-    
+
     return parte
 
 #FUNCIONAL
@@ -137,17 +143,26 @@ def reproducir(parte:stream.Part)->"void":
     #Postcondición de la definición:
     assert(True)
 
+
 #FUNCIONAL
-def componer(partes:list) -> stream.Score:
+def componer(partes:list) -> "void":
     """
-    Esta función crea una canción al componer una lista de partes 
+    Esta función crea una canción al componer una lista de partes
     """
-    
+    global cancion
     cancion = stream.Score()
     for i in partes:
         cancion.insert(0,i)
-    
-    return cancion
+
+def comp_play(partes:list)-> "void":
+    """
+    Este procedimiento compone y reproduce una lista de notas.
+    """
+    componer(partes)
+    reproducir(cancion)
+
+
+
 
 
 
@@ -159,9 +174,8 @@ f = note.Note("F5")
 g = note.Note("A5")
 
 prueba = crear_arpegio(f,"m3")
-prueba2 = crear_arpegio(g,"P8")        
+prueba2 = crear_arpegio(g,"P8")
+partes = [prueba, prueba2]
 cancion = stream.Score()
 cargar("/home/blitz/midis/cancion.tinynotation",cancion)
-reproducir(prueba)
-reiniciar_parte(prueba)
-reproducir(prueba)
+comp_play(partes)
