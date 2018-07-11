@@ -12,7 +12,8 @@ intervalo = "null"
 intervalos_validos = ["P1","m2","M2","m3","M3"
                       "P4","P5","m6","M6","m7"
                       "M7","P8"]
-
+composicion=[stream.Part(),stream.Part(),stream.Part(),stream.Part(),stream.Score()]
+i = 0
 
 def para_todo(lista):
     """
@@ -112,25 +113,26 @@ def reiniciar_cancion():
     cancion = stream.Score()
 
 #FUNCIONAL
-def crear_arpegio(nota:note.Note,intervalo:str) -> stream.Part:
+def crear_arpegio(nota:note.Note,intervalo:str):
     """
     Este procedimiento crea un arpegio de 8 notas partiendo de una nota y
     serparado por un intervalo "intervalo".
     """
+    global composicion
     #Precondición de la definición:
     try:
-        assert(existe(i==intervalo for i in intervalos_validos) and (nota != "null") and (intervalo!="null"))
+        #assert(existe(k==intervalo for k in intervalos_validos) and (nota != "null") and (intervalo!="null"))
         parte = stream.Part()
-        for i in range(8):
+        for j in range(8):
             parte.append(nota)
             nota = nota.transpose(intervalo)
+            composicion[i] =  parte
+
     except:
         print("Ese intervalo no es válido.")
 
     #Postcondición de la definición:
     #parte es un arpegio de 8 notas separadas por "intervalo"
-
-    return parte
 
 #FUNCIONAL
 def reproducir(parte:stream.Part)->"void":
@@ -149,17 +151,22 @@ def componer(partes:list) -> "void":
     """
     Esta función crea una canción al componer una lista de partes
     """
-    global cancion
-    cancion = stream.Score()
+    global composicion
+    composicion[4] = stream.Score()
     for i in partes:
-        cancion.insert(0,i)
+        composicion[4].insert(0,i)
 
 def comp_play(partes:list)-> "void":
     """
     Este procedimiento compone y reproduce una lista de notas.
     """
+    global composicion
     componer(partes)
-    reproducir(cancion)
+    reproducir(composicion[4])
+def piano_nota(nota: str):
+    global notaPiano
+    notaPiano = note.Note(nota)
+
 
 
 
@@ -167,15 +174,10 @@ def comp_play(partes:list)-> "void":
 
 
 #LAS SIGUIENTES SON VARIABLES DE TESTEO:
-p0 = stream.Part()
-p1 = stream.Part()
+crear_arpegio(note.Note("F5"),"m3")
+i = 1
+crear_arpegio(note.Note("F5"),"-P8")
 
-f = note.Note("F5")
-g = note.Note("A5")
+comp_play(composicion[0:4:1])
 
-prueba = crear_arpegio(f,"m3")
-prueba2 = crear_arpegio(g,"P8")
-partes = [prueba, prueba2]
-cancion = stream.Score()
-cargar("/home/blitz/midis/cancion.tinynotation",cancion)
-comp_play(partes)
+

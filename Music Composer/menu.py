@@ -7,13 +7,16 @@ from music21 import *
 #*---------Variables----------*#
 i = 1
 composicion = [stream.Part(),stream.Part(),stream.Part(),stream.Part(),stream.Score()]
-intervalos_validos = ["P1","m2","M2","m3","M3",
+intervalos_validos = ["...", "P1","m2","M2","m3","M3",
                       "P4","P5","m6","M6","m7",
                       "M7","P8","-m2","-M2",
                       "-m3","-M3","-P4","-P5","-m6",
                       "-M6","-m7","-M7","-P8"]
-notaPiano = None
-intArp = None
+
+notaPiano = None #Esta variable sirve para guardar de forma temporal una nota
+intArp = None #Esta variable sirve para guardar de forma temporal un intervalo
+variable = ""
+
 
 #*-----------Ventana----------*#
 window = Tk()
@@ -63,6 +66,10 @@ def tinystr(direccion:str) -> str:
         print("Esa dirección no es válida")
 
 def OpenFile():
+    """
+    Esta es una implementación de una función in-built de Tkinter. Devuelve una 
+    ruta de archivo
+    """
     name = askopenfilename(initialdir="C:/", filetypes =(("Tinynotation File", "*.tinynotation"),("All Files","*.*")), title = "Choose a file.")
     return name
 
@@ -82,16 +89,22 @@ def cargar(ruta:str,parte:stream.Part) -> "void":
         posible = False
 
     try:
-        #assert(posible)
+        assert(posible)
         s = converter.parse(ruta)
         parte.append(s)
     except:
         print("La ruta especificada no es válida.")
 
 def piano_window():
+    """
+    Un procedimiento para tkinter, sirve para invocar la ventana del piano
+    """
     piano = Toplevel()
 
 def show_frame(page_name):
+    """
+    Muestra una página de la ventana
+    """
     page_name.tkraise()
 
 def cambiar_parte(j:int):
@@ -100,6 +113,9 @@ def cambiar_parte(j:int):
     """
     global i
     i = j
+
+    global notaPiano
+    notaPiano = None
 
 def reproducir(parte:stream.Part)->"void":
     """
@@ -110,6 +126,7 @@ def reproducir(parte:stream.Part)->"void":
     parte.show("midi")
     #Postcondición de la definición:
     assert(True)
+
 def reiniciar_parte() -> "void":
     """
     Este procedimiento reinicia la parte alojada en composición[i]
@@ -133,12 +150,13 @@ def componer(partes:list) -> "void":
     global composicion
     composicion[4] = stream.Score()
     for i in partes:
-        composicion.insert(0,i)
+        composicion[4].insert(0,i)
 
 def comp_play(partes:list)-> "void":
     """
     Este procedimiento compone y reproduce una lista de notas.
     """
+    global composicion
     componer(partes)
     reproducir(composicion[4])
 
@@ -147,20 +165,58 @@ def transponer(parte:stream.Part,intervalo:str) -> stream.Part:
     Esta función devuelve la traspuesta de una parte.
     """
     #Precondición de la definición:
-    try:
-        assert(existe(intervalo==i for i in intervalos_validos))
-    except:
-        print("El intervalo que ha introducido no es válido")
     #Programa
     try:
-        assert(existe(intervalo==i for i in intervalos_validos))
+        #assert(existe(intervalo==i for i in intervalos_validos))
         p = parte.transpose(intervalo)
+        composicion[i] = p
     except:
         print("El intervalo no es válido.")
-    return p
+    
     #Postcondición de la definición:
     #p es la traspuesta de parte
 
+def crear_arpegio(nota:note.Note,intervalo:str):
+    """
+    Este procedimiento crea un arpegio de 8 notas partiendo de una nota y
+    serparado por un intervalo "intervalo".
+    """
+    global composicion
+    #Precondición de la definición:
+    try:
+        #assert(existe(k==intervalo for k in intervalos_validos))
+        parte = stream.Part()
+        for j in range(8):
+            parte.append(nota)
+            nota = nota.transpose(intervalo)
+            composicion[i] = parte
+    except:
+        print("Ese intervalo no es válido.")
+
+    #Postcondición de la definición:
+    #parte es un arpegio de 8 notas separadas por "intervalo"
+    
+
+def arpegio2():
+    """
+    Este procedimiento es solo una concatenación de procedimientos. Sirve para 
+    simplificar las llamadas de acciones de los botones de tkinter
+    """
+    global notaPiano
+    global intArp
+    global composicion
+    global variable
+    intArp = variable.get()
+    crear_arpegio(notaPiano,intArp)
+    intArp = None
+    notaPiano = None
+
+def piano_nota(nota: str):
+    """
+    Este procedimiento es para cambiar el valor notaPiano segun la entrada del piano
+    """
+    global notaPiano
+    notaPiano = note.Note(nota)
 
 
 #*----------------------Widgets----------------------*#
@@ -211,7 +267,7 @@ botonTransportar.grid(row=6, column=0, sticky=W+E+N+S)
 
 imgPlay = PhotoImage(file="button_escuchar.png")
 botonPlay = Button(newframe, cursor="hand2", image=imgPlay,
-border=0, bg="#999999", command = lambda: [show_frame(frameP), reproducir(composicion[i])])
+border=0, bg="#999999", command = lambda:  reproducir(composicion[i]))
 botonPlay.grid(row=6, column=1, sticky=W+E+N+S)
 
 imgBorrar = PhotoImage(file="button_borrar.png")
@@ -240,8 +296,8 @@ msgTrans.config(font=("Helvetica", 20), bg="#999999")
 msgTrans.pack()
 
 var = StringVar(frameTrans)
-var.set("P1") # default value
-menu = OptionMenu(frameTrans, var, "P1","m2","M2","m3","M3",
+var.set("...") # default value
+menu = OptionMenu(frameTrans, var,"...", "P1","m2","M2","m3","M3",
                       "P4","P5","m6","M6","m7",
                       "M7","P8","-m2","-M2",
                       "-m3","-M3","-P4","-P5","-m6",
@@ -249,7 +305,7 @@ menu = OptionMenu(frameTrans, var, "P1","m2","M2","m3","M3",
 menu.place(x = 225, y = 110)
 
 botonTransportar = Button(frameTrans, cursor="hand2",
-image=imgTransportar, border=0, bg="#999999", command = lambda: transponer(stream.Part, var.get()))
+image=imgTransportar, border=0, bg="#999999", command = lambda: transponer(composicion[i], var.get()))
 botonTransportar.pack()
 
 backTrans = PhotoImage(file="button_regresar.png")
@@ -279,19 +335,18 @@ botonBackBorrar.pack()
 
 
 #*--------- Frame Piano ---------*#
-def piano_nota(nota: str):
-    notaPiano = note.Note(nota)
-    print(notaPiano)
-
 def piano_window():
-
+    """
+    Procedimiento para llamar al piano.
+    """
     piano = Tk()
     piano.title("Compositor Musical")
     piano.resizable(0,0)
-    piano.iconbitmap("icono.ico")
+    #piano.iconbitmap("icono.ico")
     piano.geometry("1110x600")
 
-    #Piano from left to right
+
+    #De aquí en adelante son los botones del piano ordenados de izquierda a derecha.
     botonC1 = Button(piano, text= "C1",
     bg= 'white', fg = 'black', width = 4, height = 10, command = lambda: piano_nota('C1'))
     botonC1.place(x =20, y =150)
@@ -695,17 +750,22 @@ def piano_window():
     texto.config(font=("Helvetica", 14))
     texto.place(x = 510, y = 66)
 
+    global variable
     variable = StringVar(piano)
-    variable.set("P1") # default value
-    w = OptionMenu(piano, variable, "P1","m2","M2","m3","M3",
+    variable.set("...") # default value
+    w = OptionMenu(piano, variable, "...", "P1","m2","M2","m3","M3",
                           "P4","P5","m6","M6","m7",
                           "M7","P8","-m2","-M2",
                           "-m3","-M3","-P4","-P5","-m6",
                           "-M6","-m7","-M7","-P8")
     w.place(x = 525, y = 90)
 
-    ok = Button(piano, text="Aceptar", command = lambda: piano.destroy())
-    ok.place(x = 525, y = 550)
+
+    ok = Button(piano, text="Aceptar", command = lambda: arpegio2())
+    ok.place(x = 525, y = 540)
+
+    cerrar = Button(piano, text="Regresar", command = lambda: piano.destroy())
+    cerrar.place(x = 525, y = 560)
 
     piano.mainloop()
 
