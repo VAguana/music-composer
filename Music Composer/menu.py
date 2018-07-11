@@ -1,3 +1,15 @@
+"""
+music_composer.py; Proyecto final, entrega final.
+
+Descripción: Entrega final del proyecto para Laboratorio de algoritmos y estructuras I.
+Este es un compositor musical con capacidad para 4 partes que luego pueden ser compuestas.
+
+Autores:
+    Luis Diaz; 15-10420
+    Valentina Aguana; 15-10011
+
+"""
+
 from tkinter import filedialog
 from tkinter import*
 from tkinter.filedialog import askopenfilename
@@ -22,7 +34,7 @@ variable = ""
 window = Tk()
 window.title("Compositor Musical")
 window.resizable(0,0)
-#window.iconbitmap("icono.ico")
+window.iconbitmap("icono.ico")
 window.geometry("500x300")
 
 
@@ -33,9 +45,6 @@ frame1.config(bg="#999999")
 newframe = Frame()
 newframe.config(bg="#999999")
 
-frameArp = Frame()
-frameArp.config(bg="#999999")
-
 frameTrans = Frame()
 frameTrans.config(bg="#999999")
 
@@ -45,7 +54,7 @@ frameP.config(bg="#999999")
 frameBorrar = Frame()
 frameBorrar.config(bg="#999999")
 
-for frame in (frame1, newframe, frameArp, frameTrans, frameP, frameBorrar):
+for frame in (frame1, newframe, frameTrans, frameP, frameBorrar):
     frame.place(width="500", height="300")
 
 
@@ -226,19 +235,19 @@ label = Label(frame1, image=image)
 label.place(width="500", height="300")
 
 imgP1 = PhotoImage(file="button1.png")
-botonParte1 = Button(frame1, cursor="hand2", image=imgP1, border=0, bg="#999999", command = lambda: [show_frame(newframe),cambiar_parte(0)])
+botonParte1 = Button(frame1, cursor="hand2", image=imgP1, border=0, bg="#999999", command = lambda: [show_frame(newframe),cambiar_parte(0), window.geometry("305x157")])
 botonParte1.grid(row=0, column=0)
 
 imgP2 = PhotoImage(file="button2.png")
-botonParte2 = Button(frame1, cursor="hand2", image=imgP2, border=0, bg="#999999", command = lambda: [show_frame(newframe),cambiar_parte(1)])
+botonParte2 = Button(frame1, cursor="hand2", image=imgP2, border=0, bg="#999999", command = lambda: [show_frame(newframe),cambiar_parte(1), window.geometry("305x157")])
 botonParte2.grid(row=1, column=0)
 
 imgP3 = PhotoImage(file="button3.png")
-botonParte3 = Button(frame1, cursor="hand2", image=imgP3, border=0, bg="#999999", command = lambda: [show_frame(newframe),cambiar_parte(2)])
+botonParte3 = Button(frame1, cursor="hand2", image=imgP3, border=0, bg="#999999", command = lambda: [show_frame(newframe),cambiar_parte(2), window.geometry("305x157")])
 botonParte3.grid(row=2, column=0)
 
 imgP4 = PhotoImage(file="button4.png")
-botonParte4 = Button(frame1, cursor="hand2", image=imgP4, border=0, bg="#999999", command = lambda: [show_frame(newframe),cambiar_parte(3)])
+botonParte4 = Button(frame1, cursor="hand2", image=imgP4, border=0, bg="#999999", command = lambda: [show_frame(newframe),cambiar_parte(3), window.geometry("305x157")])
 botonParte4.grid(row=3, column=0)
 
 imgEsc = PhotoImage(file="playb.png")
@@ -253,42 +262,31 @@ botonSalir.grid(row=5, column=0)
 #*--------- New Frame ---------*#
 imgCargar = PhotoImage(file="button_cargar.png")
 botonCargar = Button(newframe, cursor="hand2", image=imgCargar, border=0, bg="#999999", command= lambda: cargar(OpenFile(),composicion[i]))
-botonCargar.grid(row=3, column=0, sticky=W+E+N+S)
+botonCargar.grid(row=3, column=1, sticky=W+E+N+S)
 
 imgArpegio = PhotoImage(file="button_arpegio.png")
 botonArpegio = Button(newframe, width="121", height="35",cursor="hand2",
 image=imgArpegio, border=0, bg="#999999", command = lambda: piano_window())
-botonArpegio.grid( row=3, column=1, sticky=W+E+N+S)
+botonArpegio.grid( row=3, column=2, sticky=W+E+N+S)
 
 imgTransportar = PhotoImage(file="button_transportar.png")
 botonTransportar = Button(newframe, cursor="hand2",
-image=imgTransportar, border=0, bg="#999999", command = lambda: show_frame(frameTrans))
-botonTransportar.grid(row=6, column=0, sticky=W+E+N+S)
+image=imgTransportar, border=0, bg="#999999", command = lambda: [show_frame(frameTrans), window.geometry("500x300")])
+botonTransportar.grid(row=6, column=1, sticky=W+E+N+S)
 
 imgPlay = PhotoImage(file="button_escuchar.png")
 botonPlay = Button(newframe, cursor="hand2", image=imgPlay,
 border=0, bg="#999999", command = lambda:  reproducir(composicion[i]))
-botonPlay.grid(row=6, column=1, sticky=W+E+N+S)
+botonPlay.grid(row=6, column=2, sticky=W+E+N+S)
 
 imgBorrar = PhotoImage(file="button_borrar.png")
 botonBorrar = Button(newframe, cursor="hand2", image=imgBorrar,
 border=0, bg="#999999", command = lambda: reiniciar_parte())
-botonBorrar.grid(row=8, column=0)
+botonBorrar.grid(row=8, column=1)
 
 imgRegresar = PhotoImage(file="button_regresar.png")
-botonRegresar = Button(newframe, cursor="hand2", image=imgRegresar, border=0, bg="#999999", command= lambda: show_frame(frame1))
-botonRegresar.grid(row=8, column=1)
-
-
-#*--------- Frame Arpegio ---------*#
-msgArp = Label(frameArp, text="Generar Arpegio", height=5, width=100)
-msgArp.config(font=("Helvetica", 20), bg="#999999")
-msgArp.pack()
-
-backArp = PhotoImage(file="button_regresar.png")
-botonBackArp = Button(frameArp, image=backArp, border=0, bg="#999999",
-command = lambda: show_frame(newframe))
-botonBackArp.pack()
+botonRegresar = Button(newframe, cursor="hand2", image=imgRegresar, border=0, bg="#999999", command= lambda: [show_frame(frame1), window.geometry("500x300")])
+botonRegresar.grid(row=8, column=2)
 
 #*--------- Frame Transponer ---------*#
 msgTrans = Label(frameTrans, text="Elija el intervalo a transponer", height=5, width=100)
@@ -310,7 +308,7 @@ botonTransportar.pack()
 
 backTrans = PhotoImage(file="button_regresar.png")
 botonBackTrans = Button(frameTrans, image=backTrans, border=0, bg="#999999",
-command = lambda: show_frame(newframe), cursor="hand2")
+command = lambda: [show_frame(newframe), window.geometry("305x157")], cursor="hand2")
 botonBackTrans.pack()
 
 #*--------- Frame Play Part ---------*#
@@ -342,7 +340,7 @@ def piano_window():
     piano = Tk()
     piano.title("Compositor Musical")
     piano.resizable(0,0)
-    #piano.iconbitmap("icono.ico")
+    piano.iconbitmap("icono.ico")
     piano.geometry("1110x600")
 
 
@@ -762,10 +760,10 @@ def piano_window():
 
 
     ok = Button(piano, text="Aceptar", command = lambda: arpegio2())
-    ok.place(x = 525, y = 540)
+    ok.place(x = 527, y = 537)
 
     cerrar = Button(piano, text="Regresar", command = lambda: piano.destroy())
-    cerrar.place(x = 525, y = 560)
+    cerrar.place(x = 525, y = 565)
 
     piano.mainloop()
 

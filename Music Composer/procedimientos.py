@@ -82,7 +82,7 @@ def cargar(ruta:str,parte:stream.Part) -> "void":
     posible = True #Posible indica si es posible o no efectuar la carga.
 
     try:
-        assert(ruta[len(ruta)-13::1]==".tinynotation")
+        assert((ruta[len(ruta)-13::1]==".tinynotation") or ruta[len(ruta)-5::1])
     except:
         print("La extensión del archivo especificado no es válida.")
         posible = False
@@ -167,7 +167,8 @@ def piano_nota(nota: str):
     global notaPiano
     notaPiano = note.Note(nota)
 
-
+def change_size(size: str):
+    window.geometry(size)
 
 
 
